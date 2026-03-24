@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yabudu/auth_screen.dart';
+import 'package:yabudu/opt_screen.dart';
+import 'package:yabudu/reg_screen.dart';
 
 void main() {
   runApp(const MainApp());
@@ -12,7 +14,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AuthScreen(),
+      home: RegScreen(),
     );
   }
 }

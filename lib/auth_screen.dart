@@ -13,7 +13,7 @@ class AuthScreen extends StatelessWidget {
             Expanded(
               child: Center(
                 child: FractionallySizedBox(
-                  heightFactor: 0.92,
+                  heightFactor: 0.90,
                   widthFactor: 0.9,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
