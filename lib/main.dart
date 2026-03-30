@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:yabudu/auth_screen.dart';
-import 'package:yabudu/opt_screen.dart';
-import 'package:yabudu/reg_screen.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/reg_screen.dart';
 
 void main() {
   runApp(const MainApp());
