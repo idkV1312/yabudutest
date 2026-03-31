@@ -1,8 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:yabudu/features/yabudu/presentation/widgets/gender_sheet_mockuo.dart';
 
-class RegScreen extends StatelessWidget {
-  const RegScreen({super.key});
 
+
+class RegScreen extends StatefulWidget {
+
+  RegScreen({super.key});
+
+  @override
+  State<RegScreen> createState() => _RegScreenState();
+}
+
+class _RegScreenState extends State<RegScreen> {
+  final dateMask = MaskTextInputFormatter(
+    mask: '##.##.####',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  String? selectedGender;
+
+  void _openGenderSheet() async {
+    final result = await showModalBottomSheet<String>(
+      context: context, 
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => GenderSheet(),
+    );
+
+    if (result != null) {
+      setState(() {
+        selectedGender = result;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +139,8 @@ class RegScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10),
                                 TextField(
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                                   decoration: InputDecoration(
                                     hintText: 'Номер телефона',
                                     hintStyle: const TextStyle(
@@ -134,6 +168,8 @@ class RegScreen extends StatelessWidget {
                                 ),
                                 SizedBox(height: 10),
                                 TextField(
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [dateMask],
                                   decoration: InputDecoration(
                                     hintText: 'Дата рождения',
                                     hintStyle: const TextStyle(
@@ -160,32 +196,31 @@ class RegScreen extends StatelessWidget {
                                   ),
                                 ),
                                 SizedBox(height: 10),
-                                TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Пол',
-                                    hintStyle: const TextStyle(
-                                      fontFamily: 'Monserrat',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 171, 176, 180),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                      255,
-                                      242,
-                                      243,
-                                      244,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(40),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
-                                ),
+                                GestureDetector(
+  onTap: _openGenderSheet,
+  child: Container(
+    width: double.infinity,
+    padding: const EdgeInsets.symmetric(
+      horizontal: 20,
+      vertical: 16,
+    ),
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 242, 243, 244),
+      borderRadius: BorderRadius.circular(40),
+    ),
+    child: Text(
+      selectedGender ?? 'Пол',
+      style: TextStyle(
+        fontFamily: 'Monserrat',
+        fontWeight: FontWeight.w500,
+        fontSize: 14,
+        color: selectedGender == null
+            ? const Color.fromARGB(255, 171, 176, 180)
+            : Colors.black,
+      ),
+    ),
+  ),
+),
                               ],
                             ),
                           ],
@@ -296,3 +331,4 @@ class RegScreen extends StatelessWidget {
     );
   }
 }
+
