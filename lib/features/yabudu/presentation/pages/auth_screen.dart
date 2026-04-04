@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yabudu/features/auth/data/auth_service.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -85,7 +86,16 @@ class AuthScreen extends StatelessWidget {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: null,
+                                onPressed: () async {
+  final auth = AuthService();
+
+  try {
+    final token = await auth.login();
+    print("TOKEN: $token");
+  } catch (e) {
+    print(e);
+  }
+},
                                 style: ElevatedButton.styleFrom(
                                   disabledBackgroundColor: const Color.fromARGB(
                                     255,

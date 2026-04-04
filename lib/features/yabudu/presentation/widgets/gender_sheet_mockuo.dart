@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
 class GenderSheet extends StatefulWidget {
+  final String? initialGender;
+
+  const GenderSheet({super.key, this.initialGender});
+
   @override
   State<GenderSheet> createState() => _GenderSheetState();
 }
 
 class _GenderSheetState extends State<GenderSheet> {
-  String gender = 'male';
+  String? gender;
+
+  @override
+  void initState() {
+    super.initState();
+    gender = widget.initialGender; // <-- берем переданное значение
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,32 +40,64 @@ class _GenderSheetState extends State<GenderSheet> {
           const SizedBox(height: 12),
           const Text(
             'Пол',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              fontFamily: 'FindSansPro',
+            ),
           ),
           const SizedBox(height: 26),
 
-          RadioListTile<String>(
-            value: 'Мужской',
-            groupValue: gender,
-            title: const Text('Мужской'),
-            onChanged: (v) => setState(() => gender = v!),
-          ),
-          RadioListTile<String>(
-            value: 'Женский',
-            groupValue: gender,
-            title: const Text('Женский'),
-            onChanged: (v) => setState(() => gender = v!),
-          ),
+          _buildTile('Мужской'),
+          _buildTile('Женский'),
 
           const SizedBox(height: 10),
-
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context, gender);
-            },
-            child: const Text('Выбрать'),
-          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTile(String value) {
+    final isSelected = gender == value;
+
+    return InkWell(
+      onTap: () {
+        setState(() => gender = value);
+        Navigator.pop(context, value);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            // КАСТОМНЫЙ КРУЖОК
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected ? Colors.blue : Colors.grey,
+                  width: 2,
+                ),
+                color: isSelected ? Colors.blue : Colors.transparent,
+              ),
+              child: isSelected
+                  ? const Icon(Icons.check, size: 14, color: Colors.white)
+                  : null,
+            ),
+
+            const SizedBox(width: 12),
+
+            Text(
+              value,
+              style: const TextStyle(
+                fontFamily: 'Monsterrat',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
