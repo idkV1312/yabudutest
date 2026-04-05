@@ -49,6 +49,28 @@ class RegScreen extends StatefulWidget {
 }
 
 class _RegScreenState extends State<RegScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    firstNameController.addListener(_updateState);
+    lastNameController.addListener(_updateState);
+    phoneController.addListener(_updateState);
+    birthDateController.addListener(_updateState);
+  }
+
+  void _updateState() {
+    setState(() {});
+  }
+
+  bool get isFormValid {
+    return firstNameController.text.trim().isNotEmpty &&
+        lastNameController.text.trim().isNotEmpty &&
+        phoneController.text.trim().isNotEmpty &&
+        birthDateController.text.trim().length == 10 &&
+        selectedGender != null;
+  }
+
   // ===== MASK =====
   final dateMask = MaskTextInputFormatter(
     mask: '##.##.####',
@@ -68,9 +90,7 @@ class _RegScreenState extends State<RegScreen> {
   Future<void> _openGenderSheet() async {
     final result = await showModalBottomSheet<String>(
       context: context,
-      builder: (_) => GenderSheet(
-        initialGender: selectedGender,
-      ),
+      builder: (_) => GenderSheet(initialGender: selectedGender),
     );
 
     if (result != null) {
@@ -82,43 +102,40 @@ class _RegScreenState extends State<RegScreen> {
 
   // ===== REGISTER =====
   Future<void> registerUser() async {
-  try {
-    final url = Uri.parse('https://develop.yabudu.club/api/v1/users');
+    try {
+      final url = Uri.parse('https://develop.yabudu.club/api/v1/users');
 
-    final password = generatePassword();
+      final password = generatePassword();
 
-    final body = {
-      "firstname": firstNameController.text.trim(),
-      "lastname": lastNameController.text.trim(),
-      "phoneNumber": phoneController.text.trim(),
-      "birthDate": formatDate(birthDateController.text.trim()),
-      "email":
-          "test_${DateTime.now().millisecondsSinceEpoch}@yabudu.dev",
-      "password": password,
-    };
+      final body = {
+        "firstname": firstNameController.text.trim(),
+        "lastname": lastNameController.text.trim(),
+        "phoneNumber": phoneController.text.trim(),
+        "birthDate": formatDate(birthDateController.text.trim()),
+        "email": "test_${DateTime.now().millisecondsSinceEpoch}@yabudu.dev",
+        "password": password,
+      };
 
-    debugPrint("ОТПРАВКА: ${jsonEncode(body)}");
+      debugPrint("ОТПРАВКА: ${jsonEncode(body)}");
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(body),
-    );
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
 
-    debugPrint("STATUS: ${response.statusCode}");
-    debugPrint("BODY: ${response.body}");
+      debugPrint("STATUS: ${response.statusCode}");
+      debugPrint("BODY: ${response.body}");
 
-    if (response.statusCode == 201) {
-      debugPrint("SUCCESS 🎉");
-    } else {
-      debugPrint("ERROR ❌");
+      if (response.statusCode == 201) {
+        debugPrint("SUCCESS 🎉");
+      } else {
+        debugPrint("ERROR ❌");
+      }
+    } catch (e) {
+      debugPrint("NETWORK ERROR: $e");
     }
-  } catch (e) {
-    debugPrint("NETWORK ERROR: $e");
   }
-}
 
   @override
   void dispose() {
@@ -165,79 +182,248 @@ class _RegScreenState extends State<RegScreen> {
                         const Spacer(),
 
                         Column(
+                          mainAxisSize: MainAxisSize.max,
                           children: [
                             const Text(
                               'Регистрация',
+                              textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 22,
+                                fontFamily: 'FindSansPro',
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 20),
-
-                            TextField(
-                              controller: firstNameController,
-                              decoration: _input("Имя"),
-                            ),
-                            const SizedBox(height: 10),
-
-                            TextField(
-                              controller: lastNameController,
-                              decoration: _input("Фамилия"),
-                            ),
-                            const SizedBox(height: 10),
-
-                            TextField(
-                              controller: phoneController,
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: _input("Номер телефона"),
-                            ),
-                            const SizedBox(height: 10),
-
-                            TextField(
-                              controller: birthDateController,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [dateMask],
-                              decoration: _input("Дата рождения"),
-                            ),
-                            const SizedBox(height: 10),
-
-                            GestureDetector(
-                              onTap: _openGenderSheet,
-                              child: Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color.fromARGB(
-                                    255,
-                                    242,
-                                    243,
-                                    244,
+                            Column(
+                              children: [
+                                TextField(
+                                  controller: firstNameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Имя',
+                                    hintStyle: const TextStyle(
+                                      fontFamily: 'Monserrat',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Color.fromARGB(255, 171, 176, 180),
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                      255,
+                                      242,
+                                      243,
+                                      244,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                      borderSide: BorderSide.none,
+                                    ),
                                   ),
-                                  borderRadius: BorderRadius.circular(40),
                                 ),
-                                child: Text(
-                                  selectedGender ?? 'Пол',
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: lastNameController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Фамилия',
+                                    hintStyle: const TextStyle(
+                                      fontFamily: 'Monserrat',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Color.fromARGB(255, 171, 176, 180),
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                      255,
+                                      242,
+                                      243,
+                                      244,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  decoration: InputDecoration(
+                                    hintText: 'Номер телефона',
+                                    hintStyle: const TextStyle(
+                                      fontFamily: 'Monserrat',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Color.fromARGB(255, 171, 176, 180),
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                      255,
+                                      242,
+                                      243,
+                                      244,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                TextField(
+                                  controller: birthDateController,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [dateMask],
+                                  decoration: InputDecoration(
+                                    hintText: 'Дата рождения',
+                                    hintStyle: const TextStyle(
+                                      fontFamily: 'Monserrat',
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 14,
+                                      color: Color.fromARGB(255, 171, 176, 180),
+                                    ),
+                                    filled: true,
+                                    fillColor: const Color.fromARGB(
+                                      255,
+                                      242,
+                                      243,
+                                      244,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                GestureDetector(
+                                  onTap: _openGenderSheet,
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 16,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(
+                                        255,
+                                        242,
+                                        243,
+                                        244,
+                                      ),
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                    child: Text(
+                                      selectedGender ?? 'Пол',
+                                      style: TextStyle(
+                                        fontFamily: 'Monserrat',
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: selectedGender == null
+                                            ? const Color.fromARGB(
+                                                255,
+                                                171,
+                                                176,
+                                                180,
+                                              )
+                                            : Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
 
                         const Spacer(),
 
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: registerUser,
-                            child: const Text('Зарегистрироваться'),
-                          ),
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: isFormValid ? registerUser : null,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: isFormValid
+                                      ? const Color(0xFF0004E3)
+                                      : const Color.fromARGB(
+                                          255,
+                                          242,
+                                          243,
+                                          244,
+                                        ),
+                                  foregroundColor: isFormValid
+                                      ? Colors.white
+                                      : Colors.grey.shade500,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: const Text(
+                                  'Зарегистрироваться',
+                                  style: TextStyle(fontFamily: 'FindSansPro'),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 12,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        'Нажимая «Зарегистрироваться», вы соглашаетесь с ',
+                                    style: TextStyle(fontFamily: 'Monsterrat'),
+                                  ),
+                                  TextSpan(
+                                    text: 'Условиями использования',
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 47, 50, 249),
+                                      fontFamily: 'Monsterrat',
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: ' и ',
+                                    style: TextStyle(fontFamily: 'Monsterrat'),
+                                  ),
+                                  TextSpan(
+                                    text: 'Политикой конфиденциальности',
+                                    style: TextStyle(
+                                      color: Color.fromARGB(255, 47, 50, 249),
+                                      fontFamily: 'Monsterrat',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -245,24 +431,28 @@ class _RegScreenState extends State<RegScreen> {
                 ),
               ),
             ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Уже зарегистрированы? ',
+                  style: TextStyle(fontFamily: 'Monsterrat'),
+                ),
+                GestureDetector(
+                  onTap: () {},
+                  child: const Text(
+                    'Войти',
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 47, 50, 249),
+                      fontFamily: 'Monsterrat',
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  InputDecoration _input(String hint) {
-    return InputDecoration(
-      hintText: hint,
-      filled: true,
-      fillColor: const Color.fromARGB(255, 242, 243, 244),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 16,
-      ),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(40),
-        borderSide: BorderSide.none,
       ),
     );
   }
