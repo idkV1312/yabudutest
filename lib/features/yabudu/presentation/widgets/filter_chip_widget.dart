@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:yabudu/theme/app_theme.dart';
 
 class FilterChipWidget extends StatelessWidget {
@@ -21,26 +21,31 @@ class FilterChipWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
-        height: 34,
         padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
-          color: selected ? ui.chipSelectedBg : ui.chipBg,
-          borderRadius: BorderRadius.circular(ui.chipRadius),
+          color: selected ? const Color(0xFFE9EBF7) : const Color(0xFFE9EBF0),
+          borderRadius: BorderRadius.circular(999),
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               label,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 32 / 3,
                 fontWeight: FontWeight.w700,
-                color: selected ? ui.chipSelectedText : ui.primary,
+                color: ui.primary,
               ),
             ),
             if (hasArrow) ...[
               const SizedBox(width: 4),
-              Icon(Icons.keyboard_arrow_down, size: 14, color: ui.primary),
+              Icon(
+                Icons.keyboard_arrow_down_rounded,
+                size: 16,
+                color: ui.primary,
+              ),
             ],
           ],
         ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:yabudu/theme/app_theme.dart';
 
 class SearchHeader extends StatelessWidget {
@@ -9,28 +9,32 @@ class SearchHeader extends StatelessWidget {
     final ui = Theme.of(context).extension<AppUiTheme>() ?? AppTheme.ui;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
         children: [
           Expanded(
             child: Container(
-              height: 40,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              height: 34,
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               decoration: BoxDecoration(
                 color: ui.chipBg,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.search, size: 18, color: ui.mutedIcon),
-                  const SizedBox(width: 8),
+                  Icon(Icons.search_rounded, size: 16, color: ui.mutedIcon),
+                  const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       'Название события',
-                      style: TextStyle(fontSize: 14, color: ui.mutedText),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: ui.mutedText,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
-                  Icon(Icons.tune, size: 18, color: ui.mutedIcon),
+                  Icon(Icons.tune_rounded, size: 16, color: ui.mutedIcon),
                 ],
               ),
             ),
@@ -39,21 +43,31 @@ class SearchHeader extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: ui.primary,
-                child: const Icon(Icons.person, color: Colors.white),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: ui.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.person_rounded, size: 18, color: Colors.white),
               ),
               Positioned(
-                right: -1,
-                top: -1,
+                right: -2,
+                top: -2,
                 child: Container(
-                  width: 11,
-                  height: 11,
+                  width: 14,
+                  height: 14,
                   decoration: BoxDecoration(
-                    color: ui.accent,
+                    color: const Color(0xFFFFC843),
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 1),
+                    border: Border.all(color: Colors.white, width: 1.4),
+                  ),
+                  child: const Center(
+                    child: CircleAvatar(
+                      radius: 2,
+                      backgroundColor: Color(0xFF2F33F9),
+                    ),
                   ),
                 ),
               ),

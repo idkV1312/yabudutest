@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yabudu/features/yabudu/presentation/bloc/yabudu_bloc.dart';
 import 'package:yabudu/features/yabudu/presentation/bloc/yabudu_event.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/category_select_screen.dart';
 import 'package:yabudu/features/yabudu/presentation/pages/events_screen.dart';
 import 'package:yabudu/theme/app_theme.dart';
 
@@ -22,7 +23,7 @@ class YabuduApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      home: const EventsScreen(),
+      home: InterestsScreen(),
     );
   }
 }

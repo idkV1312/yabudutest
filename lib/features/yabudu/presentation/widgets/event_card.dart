@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:yabudu/features/yabudu/data/models/event_item_model.dart';
 import 'package:yabudu/theme/app_theme.dart';
 
@@ -13,10 +13,10 @@ class EventCard extends StatelessWidget {
     final ui = Theme.of(context).extension<AppUiTheme>() ?? AppTheme.ui;
 
     final imageWidth = compact ? ui.compactImageWidth : double.infinity;
-    final imageHeight = compact
-        ? ui.compactImageHeight
-        : ui.recommendationImageHeight;
-    final titleSize = compact ? 14.0 : 18.0;
+    final imageHeight = compact ? ui.compactImageHeight : 156.0;
+    final titleSize = compact ? 11.0 : 21.0;
+    final titleHeight = compact ? 1.05 : 0.95;
+    final titleWeight = compact ? FontWeight.w700 : FontWeight.w800;
 
     return SizedBox(
       width: compact ? ui.compactCardWidth : null,
@@ -45,37 +45,21 @@ class EventCard extends StatelessWidget {
                 Positioned(
                   left: 6,
                   top: 6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.92),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                    child: Text(
-                      '+${item.likes}',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+                  child: _LikesBadge(item: item),
                 ),
                 Positioned(
                   right: 6,
                   top: 6,
                   child: Container(
-                    width: 26,
-                    height: 26,
+                    width: 20,
+                    height: 20,
                     decoration: const BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      item.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      size: 16,
+                      item.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      size: 13,
                       color: ui.accent,
                     ),
                   ),
@@ -84,10 +68,7 @@ class EventCard extends StatelessWidget {
                   right: 6,
                   bottom: 6,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
                       color: item.tag == EventTag.free ? ui.freeBg : ui.paidBg,
                       borderRadius: BorderRadius.circular(999),
@@ -95,11 +76,9 @@ class EventCard extends StatelessWidget {
                     child: Text(
                       item.priceLabel,
                       style: TextStyle(
-                        fontSize: 11,
+                        fontSize: 9,
                         fontWeight: FontWeight.w700,
-                        color: item.tag == EventTag.free
-                            ? ui.freeText
-                            : ui.paidText,
+                        color: item.tag == EventTag.free ? ui.freeText : ui.paidText,
                       ),
                     ),
                   ),
@@ -107,26 +86,22 @@ class EventCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 7),
           Text(
             item.title,
-            maxLines: 2,
+            maxLines: compact ? 2 : 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: titleSize,
-              height: 1.0,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF1E2330),
+              height: titleHeight,
+              fontWeight: titleWeight,
+              color: const Color(0xFF131722),
             ),
           ),
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(
-                Icons.calendar_today_outlined,
-                size: 12,
-                color: ui.mutedIcon,
-              ),
+              Icon(Icons.calendar_today_outlined, size: 10, color: ui.mutedIcon),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
@@ -136,6 +111,7 @@ class EventCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: ui.cardMetaSize,
                     color: ui.mutedText,
+                    height: 1.1,
                   ),
                 ),
               ),
@@ -144,12 +120,12 @@ class EventCard extends StatelessWidget {
           const SizedBox(height: 2),
           Row(
             children: [
-              Icon(Icons.location_on_outlined, size: 12, color: ui.mutedIcon),
+              Icon(Icons.location_on_outlined, size: 10, color: ui.mutedIcon),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   item.district,
-                  maxLines: 2,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: ui.cardMetaSize,
@@ -159,6 +135,50 @@ class EventCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LikesBadge extends StatelessWidget {
+  final EventItemModel item;
+
+  const _LikesBadge({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(2, 2, 6, 2),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        children: [
+          ClipOval(
+            child: Image.network(
+              item.author.avatarUrl,
+              width: 14,
+              height: 14,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                width: 14,
+                height: 14,
+                color: const Color(0xFFE1E4EB),
+                child: const Icon(Icons.person, size: 10, color: Color(0xFF6F7585)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '+${item.likes}',
+            style: const TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1C202B),
+            ),
           ),
         ],
       ),

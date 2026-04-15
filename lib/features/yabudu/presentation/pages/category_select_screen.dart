@@ -13,27 +13,27 @@ class _InterestsScreenState extends State<InterestsScreen> {
     'Стендап',
     'Спорт',
     'Кино',
-    'Выставка',
-    'Катки',
+    'Танцы',
+    'Мода',
     'Квест',
     'Экскурсия',
-    'Шоу',
+    'Обучение',
   ];
 
   final Set<String> selected = {};
 
   final Map<String, String> icons = {
-    'Концерт': 'assets/images/building.png',
-    'Театр': 'assets/images/camera.png',
-    'Детям': 'assets/images/candy.png',
-    'Стендап': 'assets/images/ghost.png',
-    'Спорт': 'assets/images/milk.png',
-    'Кино': 'assets/images/building.png',
-    'Выставка': 'assets/images/picture-in-picture.png',
-    'Катки': 'assets/images/search.png',
-    'Квест': 'assets/images/snowflake.png',
-    'Экскурсия': 'assets/images/speaker.png',
-    'Шоу': 'assets/images/whole-word.png',
+    'Концерт': 'assets/images/speaker.png',
+    'Театр': 'assets/images/Theatre.png',
+    'Детям': 'assets/images/Baby.png',
+    'Стендап': 'assets/images/mic.png',
+    'Спорт': 'assets/images/fitness_center.png',
+    'Кино': 'assets/images/film.png',
+    'Танцы': 'assets/images/dancing 1.png',
+    'Мода': 'assets/images/coat-hanger.png',
+    'Квест': 'assets/images/search.png',
+    'Экскурсия': 'assets/images/explore.png',
+    'Обучение': 'assets/images/school.png',
   };
 
   final double baseWidth = 430.66;
@@ -54,23 +54,25 @@ class _InterestsScreenState extends State<InterestsScreen> {
         child: Padding(
           padding: EdgeInsets.all(scaleW(context, 16)),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 'Что вам нравится?',
                 style: TextStyle(
                   fontSize: scaleW(context, 24),
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
 
               SizedBox(height: scaleH(context, 12)),
 
               Text(
-                'Выберите интересы, чтобы мы подобрали события',
+                'Поделитесь ответами, а мы подберём \n события специально для вас.\n Это займёт меньше минуты',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: scaleW(context, 16),
-                  color: Colors.grey,
+                  fontSize: scaleW(context, 14),
+                  fontWeight: FontWeight.w500,
                 ),
               ),
 

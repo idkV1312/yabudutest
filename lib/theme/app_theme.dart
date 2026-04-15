@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 @immutable
 class AppUiTheme extends ThemeExtension<AppUiTheme> {
@@ -116,13 +116,13 @@ class AppUiTheme extends ThemeExtension<AppUiTheme> {
 
 class AppTheme {
   static const ui = AppUiTheme(
-    appBg: Color(0xFFF2F3F5),
+    appBg: Colors.white,
     surface: Colors.white,
     primary: Color(0xFF2F33F9),
     accent: Color(0xFFFF6A4A),
     mutedText: Color(0xFF8E929A),
     mutedIcon: Color(0xFF8E929A),
-    chipBg: Color(0xFFECEEF4),
+    chipBg: Color(0xFFF2F3F7),
     chipSelectedBg: Color(0xFF2F33F9),
     chipSelectedText: Colors.white,
     border: Color(0xFFDCE5FF),
@@ -130,20 +130,20 @@ class AppTheme {
     freeBg: Color(0xFFE6F8EA),
     paidText: Color(0xFF2F33F9),
     freeText: Color(0xFF1E9C51),
-    sectionTitleSize: 42,
-    cardTitleSize: 32,
-    cardMetaSize: 12,
-    cardRadius: 14,
+    sectionTitleSize: 24,
+    cardTitleSize: 12,
+    cardMetaSize: 9,
+    cardRadius: 12,
     chipRadius: 16,
     compactCardWidth: 167,
     compactImageWidth: 167,
-    compactImageHeight: 132, // как на макете
-    recommendationImageHeight: 176,
+    compactImageHeight: 132,
+    recommendationImageHeight: 156,
   );
 
   static ThemeData get light => ThemeData(
     scaffoldBackgroundColor: ui.appBg,
-    fontFamily: 'Inter',
+    fontFamily: 'FindSansPro',
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(seedColor: ui.primary),
     extensions: const <ThemeExtension<dynamic>>[ui],
