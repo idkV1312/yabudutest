@@ -22,7 +22,22 @@ class _InterestsScreenState extends State<InterestsScreen> {
     'Обучение',
   ];
 
-  final List<String> extraItems = List.generate(15, (i) => 'Extra ${i + 1}');
+  final List<String> extraItems = [
+    'IT / \nТехнологии',
+    'Аниме / \nКосплей',
+    'Благотвори-\nтельность',
+    'Бизнес',
+    'Вечеринка',
+    'Встреча',
+    'Гастрономия',
+    'Игры',
+    'Йога / \nмедитация',
+    'Квартирник',
+    'Конференция',
+    'Культура',
+    'Лекции',
+    'Мастер-\nкласс',
+  ];
 
   final Set<String> selected = {};
   bool expanded = false;
@@ -39,8 +54,20 @@ class _InterestsScreenState extends State<InterestsScreen> {
     'Квест': 'assets/images/search.png',
     'Экскурсия': 'assets/images/explore.png',
     'Обучение': 'assets/images/school.png',
-    for (int i = 0; i < 15; i++)
-      'Extra ${i + 1}': 'assets/images/default1.png',
+    'IT / \nТехнологии': 'assets/images/it.png',
+    'Аниме / \nКосплей': 'assets/images/anime.png',
+    'Благотвори-\nтельность': 'assets/images/charity.png',
+    'Бизнес': 'assets/images/business_center.png',
+    'Вечеринка': 'assets/images/party.png',
+    'Встреча': 'assets/images/group.png',
+    'Гастрономия': 'assets/images/restaurant.png',
+    'Игры': 'assets/images/casino.png',
+    'Йога / \nмедитация': 'assets/images/self_improvement.png',
+    'Квартирник': 'assets/images/kvartirnik.png',
+    'Конференция': 'assets/images/conf.png',
+    'Культура': 'assets/images/culture.png',
+    'Лекции': 'assets/images/atom.png',
+    'Мастер-\nкласс': 'assets/images/master_class.png',
   };
 
   final double baseWidth = 430.66;
@@ -192,22 +219,52 @@ class _InterestsScreenState extends State<InterestsScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () {
-                    print(selected.toList());
-                  },
-                  child: Text(
-                    'В другой раз',
-                    style: TextStyle(
-                      fontSize: scaleW(context, 14),
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ),
+              if (selected.isNotEmpty)
+  SizedBox(
+    width: double.infinity,
+    child: Padding(
+      padding: EdgeInsets.only(bottom: scaleH(context, 12)),
+      child: ElevatedButton(
+        onPressed: () {
+          print("Продолжить: ${selected.toList()}");
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF2F33F9),
+          padding: EdgeInsets.symmetric(
+            vertical: scaleH(context, 14),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(40),
+          ),
+        ),
+        child: Text(
+          'Продолжить',
+          style: TextStyle(
+            fontSize: scaleW(context, 14),
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    ),
+  ),
+
+SizedBox(
+  width: double.infinity,
+  child: TextButton(
+    onPressed: () {
+      print(selected.toList());
+    },
+    child: Text(
+      'В другой раз',
+      style: TextStyle(
+        fontSize: scaleW(context, 14),
+        color: Colors.black,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+  ),
+),
               SizedBox(height: scaleH(context, 20)),
             ],
           ),
