@@ -3,11 +3,11 @@ import 'package:yabudu/features/yabudu/presentation/pages/map_screen.dart';
 import 'package:yabudu/theme/app_theme.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const YabuduApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class YabuduApp extends StatelessWidget {
+  const YabuduApp({super.key});
 
   @override
   Widget build(BuildContext context) {
