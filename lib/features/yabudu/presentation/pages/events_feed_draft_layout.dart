@@ -277,12 +277,11 @@ class _SmallEventCard extends StatelessWidget {
     'Арт встречи',
   ];
 
-  // Пути к изображениям в порядке индекса
   static const _images = [
-    'assets/images/keramic.png', // 0 - Керамический мастер-класс
-    'assets/images/kvartirnik.png', // 1 - Квартирник
-    'assets/images/master_class.png', // 2 - Бесплатный мастер-класс
-    'assets/images/art_meeting.png', // 3 - Арт встречи (добавил логичное название)
+    'assets/images/keramic.png',
+    'assets/images/kvartirnik.png', 
+    'assets/images/master_class.png', 
+    'assets/images/art_meeting.png', 
   ];
 
   @override
