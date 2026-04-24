@@ -28,25 +28,19 @@ class EventsFeedDraftLayout extends StatelessWidget {
 
                     const SizedBox(height: 16),
 
-                    // Рекомендации — горизонтальный скролл
                     const _SectionTitle('Рекомендации'),
                     const SizedBox(height: 8),
 
-                    // Горизонтально прокручиваемая секция
                     SizedBox(
-                      height: 296, // высота одной карточки
+                      height: 296,
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.only(
-                          right: 16,
-                        ), // отступ справа от последнего элемента
+                        padding: const EdgeInsets.only(right: 16),
                         child: Row(
                           children: const [
                             _RecommendationCard(),
-                            SizedBox(
-                              width: 8,
-                            ), // расстояние между карточками = 8
-                            _RecommendationCard(), // второй такой же блок справа
+                            SizedBox(width: 8),
+                            _RecommendationCard(),
                             SizedBox(width: 8),
                             // Можно добавить ещё карточки, если нужно
                           ],
@@ -283,11 +277,19 @@ class _SmallEventCard extends StatelessWidget {
     'Арт встречи',
   ];
 
+  // Пути к изображениям в порядке индекса
+  static const _images = [
+    'assets/images/keramic.png', // 0 - Керамический мастер-класс
+    'assets/images/kvartirnik.png', // 1 - Квартирник
+    'assets/images/master_class.png', // 2 - Бесплатный мастер-класс
+    'assets/images/art_meeting.png', // 3 - Арт встречи (добавил логичное название)
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 167, // точная ширина
-      height: 225, // точная высота всего блока
+      width: 167,
+      height: 225,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -295,78 +297,24 @@ class _SmallEventCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Изображение занимает всю ширину карточки
-          Container(
-            width: double.infinity,
-            height:
-                148, // высота изображения (подобрано, чтобы общая высота была ~225)
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E5E8),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Image.asset(
+              _images[index],
+              width: double.infinity,
+              height: 148,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: const Color(0xFFE5E5E8),
+                child: const Center(
+                  child: Icon(Icons.image_not_supported, color: Colors.grey),
+                ),
               ),
-            ),
-            child: Stack(
-              children: [
-                // +99
-                Positioned(
-                  left: 6,
-                  top: 6,
-                  child: Container(
-                    width: 34,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text('+99', style: TextStyle(fontSize: 10)),
-                  ),
-                ),
-                // Сердечко
-                Positioned(
-                  right: 6,
-                  top: 6,
-                  child: const CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 13,
-                      color: Colors.deepOrange,
-                    ),
-                  ),
-                ),
-                // Цена
-                Positioned(
-                  right: 6,
-                  bottom: 6,
-                  child: Container(
-                    height: 18,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8EAFF),
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '500 ₽',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF2F33F9),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
 
-          // Отступ 9 после изображения
           const SizedBox(height: 9),
 
-          // Название события
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 9),
             child: Text(
@@ -380,25 +328,21 @@ class _SmallEventCard extends StatelessWidget {
             ),
           ),
 
-          // Отступ 4
           const SizedBox(height: 4),
 
-          // Дата
-          Padding(
+          const Padding(
             padding: const EdgeInsets.symmetric(horizontal: 9),
-            child: const Text(
-              '17-19 августа 2025', // пример, можешь менять
+            child: Text(
+              '17-19 августа 2025',
               style: TextStyle(fontSize: 11, color: Color(0xFF909097)),
             ),
           ),
 
-          // Отступ 4
           const SizedBox(height: 4),
 
-          // Адрес
-          Padding(
+          const Padding(
             padding: const EdgeInsets.symmetric(horizontal: 9),
-            child: const Text(
+            child: Text(
               'Сыромятнический переулок',
               style: TextStyle(
                 fontSize: 11,
@@ -413,7 +357,6 @@ class _SmallEventCard extends StatelessWidget {
   }
 }
 
-// ====================== ОБНОВЛЁННЫЙ _RecommendationCard ======================
 class _RecommendationCard extends StatelessWidget {
   const _RecommendationCard();
 
@@ -429,80 +372,35 @@ class _RecommendationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Изображение
-          Container(
-            width: double.infinity,
-            height: 188, // подобрано под общую высоту 296
-            decoration: BoxDecoration(
-              color: const Color(0xFFE5E5E8),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+            child: Image.asset(
+              'assets/images/chess.png',
+              width: double.infinity,
+              height: 188,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: const Color(0xFFE5E5E8),
+                child: const Center(
+                  child: Icon(
+                    Icons.image_not_supported,
+                    size: 40,
+                    color: Colors.grey,
+                  ),
+                ),
               ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 8,
-                  top: 8,
-                  child: Container(
-                    width: 40,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text('+36', style: TextStyle(fontSize: 10)),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: const CircleAvatar(
-                    radius: 12,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 15,
-                      color: Colors.deepOrange,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: Container(
-                    height: 20,
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE8EAFF),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '500 ₽',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF2F33F9),
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
 
           const SizedBox(height: 12),
 
-          // Название
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               'Шахматы',
               style: TextStyle(
                 fontFamily: 'FindSansPro',
-                fontSize: 22, // чуть увеличил для красоты
+                fontSize: 22,
                 fontWeight: FontWeight.w700,
                 height: 1.1,
               ),
@@ -511,7 +409,6 @@ class _RecommendationCard extends StatelessWidget {
 
           const SizedBox(height: 6),
 
-          // Дата
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text(
@@ -522,7 +419,6 @@ class _RecommendationCard extends StatelessWidget {
 
           const SizedBox(height: 4),
 
-          // Адрес
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 12),
             child: Text(
@@ -550,14 +446,6 @@ class _BlueCounter extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         alignment: Alignment.center,
-        child: const Text(
-          '343 x 1438 Hug',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 14,
-          ),
-        ),
       ),
     );
   }
@@ -568,40 +456,53 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 68,
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 8), // ← изменил на 16
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE6E6E8),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: const BoxDecoration(
-              color: Color(0xFF2F33F9),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.home, color: Colors.white, size: 20),
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 68,
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: const Color(0xFFE6E6E8),
+            borderRadius: BorderRadius.circular(24),
           ),
-          const Icon(Icons.groups_2_outlined, size: 19),
-          const Icon(Icons.wallet_outlined, size: 19),
-          const Icon(Icons.grid_view_rounded, size: 19),
-          Container(
-            width: 32,
-            height: 32,
-            decoration: const BoxDecoration(
-              color: Color(0xFFEDEDEF),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.add, size: 18, color: Colors.deepOrange),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Icon(Icons.home, color: Color(0xFF2F33F9), size: 24),
+              Icon(Icons.groups_2_outlined, size: 24),
+              Icon(Icons.wallet_outlined, size: 24),
+              Icon(Icons.grid_view_rounded, size: 24),
+            ],
           ),
-        ],
-      ),
+        ),
+
+        Positioned(
+          bottom: 85,
+          right: 16 + 8,
+          child: Container(
+            width: 62,
+            height: 62,
+            decoration: BoxDecoration(
+              color: const Color(0xFFE6E6E8),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 8,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.add,
+              size: 32,
+              color: Colors.deepOrange, // оранжевый плюс
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
