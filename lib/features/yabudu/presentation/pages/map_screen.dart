@@ -34,7 +34,9 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
 
   Future<void> _changeZoom(double delta) async {
     final controller = _controller;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
 
     final current = await controller.getCameraPosition();
     final nextZoom = (current.zoom + delta).clamp(2.0, 20.0);
@@ -56,7 +58,9 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
 
   Future<void> _moveToCenter() async {
     final controller = _controller;
-    if (controller == null) return;
+    if (controller == null) {
+      return;
+    }
 
     await controller.moveCamera(
       CameraUpdate.newCameraPosition(
@@ -72,7 +76,7 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
   @override
   Widget build(BuildContext context) {
     final labels = widget.filterLabels.isEmpty
-        ? const ['Избранные', 'Дата', 'Тип события']
+        ? const ['Избранные', 'Дата', 'Тип событий']
         : widget.filterLabels.take(3).toList();
 
     return Scaffold(
@@ -83,57 +87,82 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Карта',
                     style: TextStyle(
-                      color: Color(0xFF2F33F9),
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
+                      color: Color(0xFFB0B3BB),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'FindSansPro',
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
                         child: Container(
-                          height: 44,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          height: 36,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24),
+                            color: const Color(0xF7FFFFFF),
+                            borderRadius: BorderRadius.circular(18),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.search_rounded,
-                                size: 20,
+                                size: 18,
                                 color: Color(0xFFB2B7C4),
                               ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Название события',
-                                style: TextStyle(
-                                  color: Color(0xFFB2B7C4),
-                                  fontSize: 14,
+                              const SizedBox(width: 6),
+                              const Expanded(
+                                child: Text(
+                                  'Название события',
+                                  style: TextStyle(
+                                    color: Color(0xFFB2B7C4),
+                                    fontSize: 12,
+                                    fontFamily: 'FindSansPro',
+                                  ),
                                 ),
+                              ),
+                              Container(
+                                width: 1,
+                                height: 16,
+                                color: const Color(0xFFD9DBE1),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.tune_rounded,
+                                size: 18,
+                                color: Color(0xFF2F33F9),
                               ),
                             ],
                           ),
                         ),
                       ),
                       const SizedBox(width: 8),
-                      _RoundIconButton(
-                        icon: Icons.filter_alt_outlined,
-                        onTap: () {},
-                      ),
-                      const SizedBox(width: 8),
-                      _RoundIconButton(
-                        icon: Icons.person,
-                        onTap: () {},
+                      SizedBox(
+                        width: 38,
+                        height: 38,
+                        child: DecoratedBox(
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF2F33F9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.person,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -141,29 +170,50 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: labels
-                          .map(
-                            (label) => Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 7,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF2F33F9),
-                                borderRadius: BorderRadius.circular(999),
-                              ),
-                              child: Text(
+                      children: labels.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final label = entry.value;
+                        final isPrimary = index == 0;
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isPrimary ? 12 : 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isPrimary
+                                ? const Color(0xFF2F33F9)
+                                : const Color(0xFFF4F5FF),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
                                 label,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
+                                style: TextStyle(
+                                  color: isPrimary
+                                      ? Colors.white
+                                      : const Color(0xFF2F33F9),
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w600,
+                                  fontFamily: 'FindSansPro',
                                 ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                              if (label.toLowerCase().contains('дата')) ...[
+                                const SizedBox(width: 2),
+                                Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  size: 14,
+                                  color: isPrimary
+                                      ? Colors.white
+                                      : const Color(0xFF2F33F9),
+                                ),
+                              ],
+                            ],
+                          ),
+                        );
+                      }).toList(),
                     ),
                   ),
                   const Spacer(),
@@ -175,52 +225,123 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
                           icon: Icons.add_rounded,
                           onTap: () => _changeZoom(1),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         _RoundIconButton(
                           icon: Icons.remove_rounded,
                           onTap: () => _changeZoom(-1),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 6),
                         _RoundIconButton(
                           icon: Icons.my_location_rounded,
                           onTap: _moveToCenter,
+                          iconSize: 18,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  GestureDetector(
-                    onTap: widget.onShowListTap,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: widget.onShowListTap,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 7,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.view_list_rounded,
+                                color: Color(0xFFFF6B3C),
+                                size: 16,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                'Список',
+                                style: TextStyle(
+                                  color: Color(0xFFFF6B3C),
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                  fontFamily: 'FindSansPro',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.view_list_rounded,
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          width: 34,
+                          height: 34,
+                          decoration: const BoxDecoration(
                             color: Color(0xFFFF6B3C),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 58,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xF5FFFFFF),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          width: 34,
+                          height: 34,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF2F33F9),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.home_rounded,
+                            color: Colors.white,
                             size: 18,
                           ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Список',
-                            style: TextStyle(
-                              color: Color(0xFFFF6B3C),
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        const Icon(
+                          Icons.groups_2_outlined,
+                          size: 20,
+                          color: Color(0xFF252A37),
+                        ),
+                        const Icon(
+                          Icons.wallet_outlined,
+                          size: 20,
+                          color: Color(0xFF252A37),
+                        ),
+                        const Icon(
+                          Icons.mail_outline_rounded,
+                          size: 20,
+                          color: Color(0xFF252A37),
+                        ),
+                        const Icon(
+                          Icons.grid_view_rounded,
+                          size: 20,
+                          color: Color(0xFF252A37),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 90),
                 ],
               ),
             ),
@@ -234,21 +355,37 @@ class _YandexMapScreenState extends State<YandexMapScreen> {
 class _RoundIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+  final double iconSize;
 
-  const _RoundIconButton({required this.icon, required this.onTap});
+  const _RoundIconButton({
+    required this.icon,
+    required this.onTap,
+    this.iconSize = 22,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 40,
-        height: 40,
-        decoration: const BoxDecoration(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
-        child: Icon(icon, color: const Color(0xFF252A37), size: 22),
+        child: Icon(
+          icon,
+          color: const Color(0xFF252A37),
+          size: iconSize,
+        ),
       ),
     );
   }

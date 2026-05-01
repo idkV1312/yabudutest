@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yabudu/features/yabudu/presentation/bloc/yabudu_bloc.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/auth_screen.dart';
 import 'package:yabudu/features/yabudu/presentation/pages/map_screen.dart';
-import 'package:yabudu/theme/app_theme.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/reg_screen.dart';
 
 void main() {
   runApp(const YabuduApp());
@@ -13,15 +16,7 @@ class YabuduApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      home: YandexMapScreen(
-        onShowListTap: () {},
-        filterLabels: const [
-          'Тест-фильтр A',
-          'Фейковая дата',
-          'Demo категория',
-        ],
-      ),
+      home: YandexMapScreen(onShowListTap: () {}, filterLabels: []),
     );
   }
 }
