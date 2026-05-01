@@ -16,7 +16,7 @@ class YabuduApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: YandexMapScreen(onShowListTap: () {}, filterLabels: []),
+      home: const AuthScreen(),
     );
   }
 }
