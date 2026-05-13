@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:yabudu/features/yabudu/presentation/bloc/yabudu_bloc.dart';
-import 'package:yabudu/features/yabudu/presentation/bloc/yabudu_event.dart';
 import 'package:yabudu/features/yabudu/presentation/pages/auth_screen.dart';
 import 'package:yabudu/features/yabudu/presentation/pages/category_select_screen.dart';
-import 'package:yabudu/features/yabudu/presentation/pages/events_screen.dart';
-import 'package:yabudu/theme/app_theme.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/events_feed_draft_layout.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/map_screen.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/poll_draft_layout.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/reg_screen.dart';
 
 void main() {
-  runApp(
-    BlocProvider<YabuduBloc>(
-      create: (_) => YabuduBloc()..add(const LoadYabudu()),
-      child: const YabuduApp(),
-    ),
-  );
+  runApp(const YabuduApp());
 }
 
 class YabuduApp extends StatelessWidget {
@@ -21,10 +17,6 @@ class YabuduApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      home: InterestsScreen(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: RegScreen());
   }
 }

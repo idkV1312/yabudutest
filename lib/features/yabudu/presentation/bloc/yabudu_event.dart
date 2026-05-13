@@ -1,25 +1,8 @@
-import 'package:flutter/foundation.dart';
+part of 'yabudu_bloc.dart';
 
-@immutable
-abstract class YabuduEvent {
+abstract class YabuduEvent extends Equatable {
   const YabuduEvent();
-}
 
-class LoadYabudu extends YabuduEvent {
-  const LoadYabudu();
-}
-
-class SelectFilter extends YabuduEvent {
-  final String filterId;
-  const SelectFilter(this.filterId);
-}
-
-class ChangeBottomNav extends YabuduEvent {
-  final int index;
-  const ChangeBottomNav(this.index);
-}
-
-class ChangeRecommendationPage extends YabuduEvent {
-  final int index;
-  const ChangeRecommendationPage(this.index);
+  @override
+  List<Object> get props => [];
 }

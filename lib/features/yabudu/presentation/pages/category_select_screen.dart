@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:yabudu/services/api_service.dart';
 
 class InterestsScreen extends StatefulWidget {
   const InterestsScreen({super.key});
@@ -98,6 +99,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 style: TextStyle(
                   fontSize: scaleW(context, 24),
                   fontWeight: FontWeight.w700,
+                  fontFamily: 'FindSansPro',
                 ),
               ),
               SizedBox(height: scaleH(context, 12)),
@@ -107,9 +109,12 @@ class _InterestsScreenState extends State<InterestsScreen> {
                 style: TextStyle(
                   fontSize: scaleW(context, 14),
                   fontWeight: FontWeight.w500,
+                  fontFamily: 'FindSansPro',
                 ),
               ),
               SizedBox(height: scaleH(context, 24)),
+
+              /// GRID
               Expanded(
                 child: SingleChildScrollView(
                   child: Wrap(
@@ -145,8 +150,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Image.asset(
-                                  icons[item] ??
-                                      'assets/images/default.png',
+                                  icons[item] ?? 'assets/images/default.png',
                                   width: scaleW(context, 32),
                                   height: scaleW(context, 32),
                                   color: isSelected
@@ -163,6 +167,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                                         ? Colors.white
                                         : Colors.black,
                                     fontWeight: FontWeight.w700,
+                                    fontFamily: 'FindSansPro',
                                   ),
                                 ),
                               ],
@@ -170,6 +175,8 @@ class _InterestsScreenState extends State<InterestsScreen> {
                           ),
                         );
                       }),
+
+                      /// КНОПКА "ДАЛЕЕ"
                       GestureDetector(
                         onTap: () {
                           setState(() {
@@ -195,9 +202,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                                 'assets/images/trending_up.png',
                                 width: scaleW(context, 32),
                                 height: scaleW(context, 32),
-                                color: expanded
-                                    ? Colors.white
-                                    : Colors.black,
+                                color: expanded ? Colors.white : Colors.black,
                               ),
                               SizedBox(height: scaleH(context, 8)),
                               Text(
@@ -205,9 +210,7 @@ class _InterestsScreenState extends State<InterestsScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: scaleW(context, 12),
-                                  color: expanded
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: expanded ? Colors.white : Colors.black,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -219,52 +222,79 @@ class _InterestsScreenState extends State<InterestsScreen> {
                   ),
                 ),
               ),
-              if (selected.isNotEmpty)
-  SizedBox(
-    width: double.infinity,
-    child: Padding(
-      padding: EdgeInsets.only(bottom: scaleH(context, 12)),
-      child: ElevatedButton(
-        onPressed: () {
-          print("Продолжить: ${selected.toList()}");
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF2F33F9),
-          padding: EdgeInsets.symmetric(
-            vertical: scaleH(context, 14),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(40),
-          ),
-        ),
-        child: Text(
-          'Продолжить',
-          style: TextStyle(
-            fontSize: scaleW(context, 14),
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ),
-    ),
-  ),
 
-SizedBox(
-  width: double.infinity,
-  child: TextButton(
-    onPressed: () {
-      print(selected.toList());
-    },
-    child: Text(
-      'В другой раз',
-      style: TextStyle(
-        fontSize: scaleW(context, 14),
-        color: Colors.black,
-        fontWeight: FontWeight.w700,
-      ),
-    ),
-  ),
-),
+              if (selected.isNotEmpty)
+                Padding(
+                  padding: EdgeInsets.only(bottom: scaleH(context, 12)),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (selected.isEmpty) return;
+
+                        final api = ApiService();
+
+                        final success = await api.savePreferences(
+                          selected.toList() /*, token: token */,
+                        );
+
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Предпочтения сохранены!'),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Не удалось сохранить. Попробуйте позже.',
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2F33F9),
+                        padding: EdgeInsets.symmetric(
+                          vertical: scaleH(context, 14),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                      ),
+                      child: Text(
+                        'Продолжить',
+                        style: TextStyle(
+                          fontSize: scaleW(context, 14),
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          fontFamily: 'FindSansPro',
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+              /// "В ДРУГОЙ РАЗ"
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () {
+                    print(selected.toList());
+                  },
+                  child: Text(
+                    'В другой раз',
+                    style: TextStyle(
+                      fontSize: scaleW(context, 14),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w700,
+                      fontFamily: 'FindSansPro',
+                    ),
+                  ),
+                ),
+              ),
+
               SizedBox(height: scaleH(context, 20)),
             ],
           ),

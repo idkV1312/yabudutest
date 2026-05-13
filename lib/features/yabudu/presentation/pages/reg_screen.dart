@@ -1,54 +1,43 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:yabudu/features/auth/data/user_service.dart';
+import 'package:yabudu/features/yabudu/presentation/pages/category_select_screen.dart';
 import 'package:yabudu/features/yabudu/presentation/widgets/gender_sheet_mockuo.dart';
-import 'dart:math';
-
-String formatDate(String input) {
-  final parts = input.split('.');
-  if (parts.length != 3) return input;
-
-  final day = parts[0];
-  final month = parts[1];
-  final year = parts[2];
-
-  return "$year-$month-$day";
-}
-
-String generatePassword({int length = 12}) {
-  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const symbols = '!@#\$%^&*';
-
-  final rand = Random.secure();
-
-  // гарантируем обязательные символы
-  String password = '';
-  password += letters[rand.nextInt(letters.length)];
-  password += letters[rand.nextInt(letters.length)];
-  password += numbers[rand.nextInt(numbers.length)];
-  password += symbols[rand.nextInt(symbols.length)];
-
-  const all = letters + numbers + symbols;
-
-  for (int i = password.length; i < length; i++) {
-    password += all[rand.nextInt(all.length)];
-  }
-
-  return password;
-}
 
 class RegScreen extends StatefulWidget {
-  const RegScreen({super.key});
+  const RegScreen({super.key, this.userService, this.onLoginTap});
+
+  final UserService? userService;
+  final VoidCallback? onLoginTap;
 
   @override
   State<RegScreen> createState() => _RegScreenState();
 }
 
 class _RegScreenState extends State<RegScreen> {
+  // ===== SERVICES =====
+  late final UserService _userService = widget.userService ?? UserService();
+  late final RegistrationRequestBuilder _requestBuilder =
+      RegistrationRequestBuilder();
+
+  // ===== CONTROLLERS =====
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final birthDateController = TextEditingController();
+
+  // ===== STATE =====
+  bool _busy = false;
+  String? selectedGender;
+
+  bool get isFormValid {
+    return firstNameController.text.trim().isNotEmpty &&
+        lastNameController.text.trim().isNotEmpty &&
+        phoneController.text.trim().isNotEmpty &&
+        birthDateController.text.trim().isNotEmpty &&
+        selectedGender != null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -60,31 +49,24 @@ class _RegScreenState extends State<RegScreen> {
   }
 
   void _updateState() {
+    if (!mounted) return;
     setState(() {});
   }
 
-  bool get isFormValid {
-    return firstNameController.text.trim().isNotEmpty &&
-        lastNameController.text.trim().isNotEmpty &&
-        phoneController.text.trim().isNotEmpty &&
-        birthDateController.text.trim().length == 10 &&
-        selectedGender != null;
+  @override
+  void dispose() {
+    firstNameController.removeListener(_updateState);
+    lastNameController.removeListener(_updateState);
+    phoneController.removeListener(_updateState);
+    birthDateController.removeListener(_updateState);
+
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    birthDateController.dispose();
+
+    super.dispose();
   }
-
-  // ===== MASK =====
-  final dateMask = MaskTextInputFormatter(
-    mask: '##.##.####',
-    filter: {"#": RegExp(r'[0-9]')},
-  );
-
-  // ===== STATE =====
-  String? selectedGender;
-
-  // ===== CONTROLLERS =====
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final phoneController = TextEditingController();
-  final birthDateController = TextEditingController();
 
   // ===== GENDER =====
   Future<void> _openGenderSheet() async {
@@ -101,49 +83,54 @@ class _RegScreenState extends State<RegScreen> {
   }
 
   // ===== REGISTER =====
-  Future<void> registerUser() async {
+  Future<void> _register() async {
+    if (_busy || !isFormValid) return;
+
+    setState(() => _busy = true);
+
     try {
-      final url = Uri.parse('https://develop.yabudu.club/api/v1/users');
-
-      final password = generatePassword();
-
-      final body = {
-        "firstname": firstNameController.text.trim(),
-        "lastname": lastNameController.text.trim(),
-        "phoneNumber": phoneController.text.trim(),
-        "birthDate": formatDate(birthDateController.text.trim()),
-        "email": "test_${DateTime.now().millisecondsSinceEpoch}@yabudu.dev",
-        "password": password,
-      };
-
-      debugPrint("ОТПРАВКА: ${jsonEncode(body)}");
-
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
+      final request = _requestBuilder.build(
+        firstName: firstNameController.text,
+        lastName: lastNameController.text,
+        phoneNumber: phoneController.text,
+        birthDateRaw: birthDateController.text,
       );
 
-      debugPrint("STATUS: ${response.statusCode}");
-      debugPrint("BODY: ${response.body}");
+      debugPrint(
+        '[RegScreen] Register payload: '
+        'email=${request.email}, '
+        'birthDate=${request.birthDate}',
+      );
 
-      if (response.statusCode == 201) {
-        debugPrint("SUCCESS 🎉");
-      } else {
-        debugPrint("ERROR ❌");
+      await _userService.registerUser(request);
+
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const InterestsScreen()),
+      );
+    } on FormatException catch (e) {
+      if (mounted) {
+        _showError(e.message);
       }
     } catch (e) {
-      debugPrint("NETWORK ERROR: $e");
+      debugPrint('[RegScreen] Registration error: $e');
+
+      if (mounted) {
+        _showError('Ошибка регистрации: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
-  @override
-  void dispose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    phoneController.dispose();
-    birthDateController.dispose();
-    super.dispose();
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   // ===== UI =====
@@ -193,127 +180,48 @@ class _RegScreenState extends State<RegScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+
                             const SizedBox(height: 20),
+
                             Column(
                               children: [
-                                TextField(
+                                _buildField(
                                   controller: firstNameController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Имя',
-                                    hintStyle: const TextStyle(
-                                      fontFamily: 'Monserrat',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 171, 176, 180),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                      255,
-                                      242,
-                                      243,
-                                      244,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(40),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
+                                  hint: 'Имя',
                                 ),
-                                SizedBox(height: 10),
-                                TextField(
+
+                                const SizedBox(height: 10),
+
+                                _buildField(
                                   controller: lastNameController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Фамилия',
-                                    hintStyle: const TextStyle(
-                                      fontFamily: 'Monserrat',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 171, 176, 180),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                      255,
-                                      242,
-                                      243,
-                                      244,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(40),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
+                                  hint: 'Фамилия',
                                 ),
-                                SizedBox(height: 10),
-                                TextField(
+
+                                const SizedBox(height: 10),
+
+                                _buildField(
                                   controller: phoneController,
+                                  hint: 'Номер телефона',
                                   keyboardType: TextInputType.phone,
                                   inputFormatters: [
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
-                                  decoration: InputDecoration(
-                                    hintText: 'Номер телефона',
-                                    hintStyle: const TextStyle(
-                                      fontFamily: 'Monserrat',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 171, 176, 180),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                      255,
-                                      242,
-                                      243,
-                                      244,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(40),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
                                 ),
-                                SizedBox(height: 10),
-                                TextField(
+
+                                const SizedBox(height: 10),
+
+                                _buildField(
                                   controller: birthDateController,
+                                  hint: 'Дата рождения',
                                   keyboardType: TextInputType.number,
-                                  inputFormatters: [dateMask],
-                                  decoration: InputDecoration(
-                                    hintText: 'Дата рождения',
-                                    hintStyle: const TextStyle(
-                                      fontFamily: 'Monserrat',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 171, 176, 180),
-                                    ),
-                                    filled: true,
-                                    fillColor: const Color.fromARGB(
-                                      255,
-                                      242,
-                                      243,
-                                      244,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 16,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(40),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                  ),
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    const BirthDateInputFormatter(),
+                                  ],
                                 ),
-                                SizedBox(height: 10),
+
+                                const SizedBox(height: 10),
+
                                 GestureDetector(
                                   onTap: _openGenderSheet,
                                   child: Container(
@@ -361,9 +269,11 @@ class _RegScreenState extends State<RegScreen> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: isFormValid ? registerUser : null,
+                                onPressed: isFormValid && !_busy
+                                    ? _register
+                                    : null,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: isFormValid
+                                  backgroundColor: isFormValid && !_busy
                                       ? const Color(0xFF0004E3)
                                       : const Color.fromARGB(
                                           255,
@@ -371,7 +281,7 @@ class _RegScreenState extends State<RegScreen> {
                                           243,
                                           244,
                                         ),
-                                  foregroundColor: isFormValid
+                                  foregroundColor: isFormValid && !_busy
                                       ? Colors.white
                                       : Colors.grey.shade500,
                                   padding: const EdgeInsets.symmetric(
@@ -382,13 +292,17 @@ class _RegScreenState extends State<RegScreen> {
                                   ),
                                   elevation: 0,
                                 ),
-                                child: const Text(
-                                  'Зарегистрироваться',
-                                  style: TextStyle(fontFamily: 'FindSansPro'),
+                                child: Text(
+                                  _busy ? '...' : 'Зарегистрироваться',
+                                  style: const TextStyle(
+                                    fontFamily: 'FindSansPro',
+                                  ),
                                 ),
                               ),
                             ),
+
                             const SizedBox(height: 8),
+
                             RichText(
                               textAlign: TextAlign.center,
                               text: const TextSpan(
@@ -399,7 +313,7 @@ class _RegScreenState extends State<RegScreen> {
                                 children: [
                                   TextSpan(
                                     text:
-                                        'Нажимая «Зарегистрироваться», вы соглашаетесь с ',
+                                        'Нажимая «Зарегистрироваться», вы соглашаетесь с ',
                                     style: TextStyle(fontFamily: 'Monsterrat'),
                                   ),
                                   TextSpan(
@@ -440,7 +354,7 @@ class _RegScreenState extends State<RegScreen> {
                   style: TextStyle(fontFamily: 'Monsterrat'),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: widget.onLoginTap,
                   child: const Text(
                     'Войти',
                     style: TextStyle(
@@ -451,9 +365,150 @@ class _RegScreenState extends State<RegScreen> {
                 ),
               ],
             ),
+
+            const SizedBox(height: 20),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildField({
+    required TextEditingController controller,
+    required String hint,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(
+          fontFamily: 'Monserrat',
+          fontWeight: FontWeight.w500,
+          fontSize: 14,
+          color: Color.fromARGB(255, 171, 176, 180),
+        ),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 242, 243, 244),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================
+// RegistrationRequestBuilder
+// =============================================
+class RegistrationRequestBuilder {
+  RegisterUserRequest build({
+    required String firstName,
+    required String lastName,
+    required String phoneNumber,
+    required String birthDateRaw,
+  }) {
+    final normalizedBirthDate = normalizeBirthDateOrNull(birthDateRaw);
+
+    if (birthDateRaw.trim().isNotEmpty && normalizedBirthDate == null) {
+      throw const FormatException(
+        'Дата рождения должна быть в формате ДД.ММ.ГГГГ',
+      );
+    }
+
+    return RegisterUserRequest(
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: 'stub_${DateTime.now().millisecondsSinceEpoch}@example.com',
+      password: 'Bukabu17!',
+      phoneNumber: phoneNumber.trim(),
+      birthDate: normalizedBirthDate,
+    );
+  }
+
+  static String? normalizeBirthDateOrNull(String rawInput) {
+    final raw = rawInput.trim();
+
+    if (raw.isEmpty) return null;
+
+    String year;
+    String month;
+    String day;
+
+    final isoMatch = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(raw);
+
+    if (isoMatch != null) {
+      year = isoMatch.group(1)!;
+      month = isoMatch.group(2)!;
+      day = isoMatch.group(3)!;
+    } else {
+      final dotMatch = RegExp(r'^(\d{2})\.(\d{2})\.(\d{4})$').firstMatch(raw);
+
+      final slashMatch = RegExp(r'^(\d{2})/(\d{2})/(\d{4})$').firstMatch(raw);
+
+      final match = dotMatch ?? slashMatch;
+
+      if (match == null) return null;
+
+      day = match.group(1)!;
+      month = match.group(2)!;
+      year = match.group(3)!;
+    }
+
+    final parsed = DateTime.tryParse('$year-$month-$day');
+
+    if (parsed == null) return null;
+
+    final y = int.parse(year);
+    final m = int.parse(month);
+    final d = int.parse(day);
+
+    if (parsed.year != y || parsed.month != m || parsed.day != d) {
+      return null;
+    }
+
+    return '$year-$month-$day';
+  }
+}
+
+// =============================================
+// BirthDate formatter
+// =============================================
+class BirthDateInputFormatter extends TextInputFormatter {
+  const BirthDateInputFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+
+    final clipped = digits.length > 8 ? digits.substring(0, 8) : digits;
+
+    final buffer = StringBuffer();
+
+    for (var i = 0; i < clipped.length; i++) {
+      if (i == 2 || i == 4) {
+        buffer.write('.');
+      }
+
+      buffer.write(clipped[i]);
+    }
+
+    final formatted = buffer.toString();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }
